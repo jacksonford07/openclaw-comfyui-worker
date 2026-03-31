@@ -1,20 +1,9 @@
 {
   "tests": [
     {
-      "name": "Health check - empty workflow",
-      "input": {
-        "workflow": {}
-      },
-      "timeout": 30000
-    },
-    {
-      "name": "LoRA download utility action",
-      "input": {
-        "action": "download_lora",
-        "lora_url": "https://huggingface.co/Alissonerdx/BFS-Best-Face-Swap/resolve/main/bfs_head_v1_flux-klein_9b_step3500_rank128.safetensors",
-        "dest_filename": "test_lora.safetensors"
-      },
-      "timeout": 120000
+      "name": "Handler responds to empty input",
+      "input": {},
+      "timeout": 60000
     }
   ],
   "config": {

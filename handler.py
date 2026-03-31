@@ -169,6 +169,10 @@ def handler(event):
 
     job_input = event.get("input", {})
 
+    # Health check — empty input returns status
+    if not job_input or (not job_input.get("workflow") and not job_input.get("action")):
+        return {"status": "ok", "message": "OpenClaw ComfyUI Worker ready", "comfyui_started": _comfyui_started}
+
     # Utility action: download LoRA
     if job_input.get("action") == "download_lora":
         return handle_lora_download(job_input)

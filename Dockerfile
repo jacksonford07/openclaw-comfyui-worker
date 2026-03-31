@@ -1,9 +1,12 @@
 # OpenClaw ComfyUI Worker
-# Base: RunPod PyTorch with CUDA 12.8
+# Base: RunPod PyTorch with CUDA 12.4
 # Models + custom nodes loaded from network volume at runtime
 # Only ComfyUI core + handler baked into the image
 
 FROM runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04
+
+# Cache buster — change this to force a full rebuild
+ARG CACHE_BUST=v0.2.0
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
@@ -11,7 +14,7 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /workspace
 
 # System deps
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN echo "Build: ${CACHE_BUST}" && apt-get update && apt-get install -y --no-install-recommends \
     git wget curl ffmpeg libgl1 libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 

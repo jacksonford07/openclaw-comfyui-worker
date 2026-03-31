@@ -27,7 +27,6 @@ sys.path.insert(0, COMFY_DIR)
 
 def wait_for_comfyui(timeout=120):
     """Wait for ComfyUI server to be ready."""
-    import urllib.request
     start = time.time()
     while time.time() - start < timeout:
         try:
@@ -46,7 +45,6 @@ def start_comfyui():
     comfy_models = f"{COMFY_DIR}/models"
     volume_models = f"{VOLUME_DIR}/ComfyUI/models"
     if os.path.exists(volume_models) and not os.path.islink(comfy_models):
-        # Back up existing models dir and symlink to volume
         if os.path.exists(comfy_models):
             os.rename(comfy_models, f"{comfy_models}_bak")
         os.symlink(volume_models, comfy_models)
@@ -74,9 +72,6 @@ def start_comfyui():
 
 def queue_workflow(workflow):
     """Submit a workflow to ComfyUI's /prompt endpoint and wait for completion."""
-    import urllib.request
-    import urllib.error
-
     prompt_id = str(uuid.uuid4())
     payload = json.dumps({"prompt": workflow, "client_id": prompt_id}).encode()
 
@@ -113,7 +108,6 @@ def extract_output_files(outputs):
     """Extract image/video file paths from ComfyUI output."""
     files = []
     for node_id, node_output in outputs.items():
-        # Images
         for img in node_output.get("images", []):
             filename = img.get("filename", "")
             subfolder = img.get("subfolder", "")
@@ -121,7 +115,6 @@ def extract_output_files(outputs):
             if os.path.exists(filepath):
                 files.append({"type": "image", "path": filepath, "filename": filename})
 
-        # Videos (VHS_VideoCombine output)
         for vid in node_output.get("gifs", []):
             filename = vid.get("filename", "")
             subfolder = vid.get("subfolder", "")
@@ -163,11 +156,15 @@ def handle_lora_download(job_input):
 _comfyui_started = False
 
 
-def handler(event):
-    """RunPod serverless handler."""
+def handler(job):
+    """RunPod serverless handler.
+
+    Args:
+        job: Dict with 'id' and 'input' keys from RunPod SDK.
+    """
     global _comfyui_started
 
-    job_input = event.get("input", {})
+    job_input = job["input"]
 
     # Health check — empty input returns status
     if not job_input or (not job_input.get("workflow") and not job_input.get("action")):
@@ -194,7 +191,6 @@ def handler(event):
         image_url = img_data.get("image", "")
 
         if image_url.startswith("http"):
-            # Download from URL
             input_dir = os.path.join(COMFY_DIR, "input")
             os.makedirs(input_dir, exist_ok=True)
             dest = os.path.join(input_dir, name)

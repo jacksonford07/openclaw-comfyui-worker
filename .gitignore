@@ -12,9 +12,11 @@ __pycache__/
 *.onnx
 
 # ComfyUI workflow JSONs (live on RunPod volume / locally only)
-*.json
-!hub.json
-!package.json
+workflows/*.json
+
+# Allow config JSONs
+!.runpod/hub.json
+!.runpod/tests.json
 
 # Logs
 *.log

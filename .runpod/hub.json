@@ -1,0 +1,47 @@
+{
+  "title": "OpenClaw ComfyUI Worker",
+  "description": "Serverless ComfyUI worker for AI image and video generation with zimg and wan checkpoints. Supports LoRA face consistency, text-to-image, image-to-image, image-to-video, and character animation workflows. Models loaded from network volume.",
+  "type": "serverless",
+  "category": "image",
+  "config": {
+    "runsOn": "GPU",
+    "containerDiskInGb": 30,
+    "gpuCount": 1,
+    "gpuIds": "AMPERE_24,AMPERE_48,AMPERE_80",
+    "allowedCudaVersions": ["12.8", "12.4", "12.1"],
+    "env": [
+      {
+        "key": "COMFY_TIMEOUT",
+        "input": {
+          "name": "Workflow timeout",
+          "type": "number",
+          "description": "Max seconds to wait for a workflow to complete",
+          "min": 60,
+          "max": 600,
+          "default": 300,
+          "advanced": true
+        }
+      },
+      {
+        "key": "HF_TOKEN",
+        "input": {
+          "name": "HuggingFace Token",
+          "type": "string",
+          "description": "HuggingFace API token for downloading gated models during volume setup",
+          "default": "",
+          "advanced": true
+        }
+      },
+      {
+        "key": "CIVITAI_TOKEN",
+        "input": {
+          "name": "CivitAI Token",
+          "type": "string",
+          "description": "CivitAI API token for downloading models during volume setup",
+          "default": "",
+          "advanced": true
+        }
+      }
+    ]
+  }
+}

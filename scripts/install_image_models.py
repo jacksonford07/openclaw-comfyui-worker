@@ -78,9 +78,14 @@ def setup_environment_tokens() -> None:
     print("🔑 Setting up environment tokens...\n")
 
     tokens = {
-        "HF_TOKEN": "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",
-        "CIVITAI_TOKEN": "768747f7e04aac897ecee0b854bd37e5",
+        "HF_TOKEN": os.environ.get("HF_TOKEN", ""),
+        "CIVITAI_TOKEN": os.environ.get("CIVITAI_TOKEN", ""),
     }
+
+    if not tokens["HF_TOKEN"]:
+        die("HF_TOKEN env var is required. Set it before running: export HF_TOKEN=your_token")
+    if not tokens["CIVITAI_TOKEN"]:
+        print("⚠️  CIVITAI_TOKEN not set — CivitAI downloads will be skipped")
 
     bashrc = Path.home() / ".bashrc"
 

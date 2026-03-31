@@ -5,8 +5,12 @@
 import os
 from pathlib import Path
 
-HF_TOKEN_VALUE = "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"
-CIVITAI_TOKEN_VALUE = "768747f7e04aac897ecee0b854bd37e5"
+HF_TOKEN_VALUE = os.environ.get("HF_TOKEN", "")
+CIVITAI_TOKEN_VALUE = os.environ.get("CIVITAI_TOKEN", "")
+
+if not HF_TOKEN_VALUE:
+    print("❌ HF_TOKEN env var is required. Set it before running: export HF_TOKEN=your_token")
+    sys.exit(1)
 
 bashrc_path = Path.home() / ".bashrc"
 

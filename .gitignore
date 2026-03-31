@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+
+# Models (too large for git)
+*.safetensors
+*.ckpt
+*.pth
+*.bin
+*.onnx
+
+# ComfyUI workflow JSONs (live on RunPod volume / locally only)
+*.json
+!hub.json
+!package.json
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

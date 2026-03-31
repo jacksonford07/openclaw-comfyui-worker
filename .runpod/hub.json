@@ -8,7 +8,7 @@
     "containerDiskInGb": 30,
     "gpuCount": 1,
     "gpuIds": "AMPERE_24,AMPERE_48,AMPERE_80",
-    "allowedCudaVersions": ["12.8", "12.4", "12.1"],
+    "allowedCudaVersions": ["12.4", "12.1"],
     "env": [
       {
         "key": "COMFY_TIMEOUT",

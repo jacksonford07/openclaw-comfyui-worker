@@ -246,10 +246,15 @@ def handler(job):
     # Execute workflow
     try:
         outputs = queue_workflow(workflow)
-    except TimeoutError as e:
-        return {"error": str(e)}
-    except Exception as e:
-        return {"error": f"Workflow execution failed: {str(e)}"}
+    except (TimeoutError, Exception) as e:
+        # Attach ComfyUI logs on failure for debugging
+        logs = {}
+        for log_name in ["comfy.log", "comfy_err.log"]:
+            log_path = f"/workspace/{log_name}"
+            if os.path.exists(log_path):
+                with open(log_path, "r") as lf:
+                    logs[log_name] = "".join(lf.readlines()[-50:])
+        return {"error": str(e), "comfy_logs": logs}
 
     # Extract output files
     files = extract_output_files(outputs)

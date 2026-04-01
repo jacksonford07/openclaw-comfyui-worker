@@ -105,7 +105,7 @@ def queue_workflow(workflow):
     actual_prompt_id = result.get("prompt_id", prompt_id)
 
     # Poll for completion
-    timeout = int(os.environ.get("COMFY_TIMEOUT", "300"))
+    timeout = int(os.environ.get("COMFY_TIMEOUT", "600"))
     start = time.time()
     while time.time() - start < timeout:
         try:
@@ -193,6 +193,18 @@ def handler(job):
     # Utility action: download LoRA
     if job_input.get("action") == "download_lora":
         return handle_lora_download(job_input)
+
+    # Utility action: read ComfyUI logs
+    if job_input.get("action") == "read_logs":
+        logs = {}
+        for name in ["comfy.log", "comfy_err.log"]:
+            path = f"/workspace/{name}"
+            if os.path.exists(path):
+                with open(path, "r") as f:
+                    lines = f.readlines()
+                    tail = int(job_input.get("tail", 100))
+                    logs[name] = "".join(lines[-tail:])
+        return logs
 
     # Utility action: list volume contents for diagnostics
     if job_input.get("action") == "list_volume":

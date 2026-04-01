@@ -3,7 +3,7 @@
 # Models + custom nodes loaded from network volume at runtime
 # Only ComfyUI core + handler baked into the image
 
-FROM runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04
+FROM runpod/pytorch:2.8.0-py3.11-cuda12.8.1-cudnn-devel-ubuntu22.04
 
 # Cache buster — change this to force a full rebuild
 ARG CACHE_BUST=v0.2.0

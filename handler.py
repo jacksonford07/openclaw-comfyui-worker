@@ -41,13 +41,14 @@ def start_comfyui():
     """Start ComfyUI server in the background."""
     import subprocess
     import glob
+    import shutil
 
     # Symlink volume models into ComfyUI if not already done
     comfy_models = f"{COMFY_DIR}/models"
     volume_models = f"{VOLUME_DIR}/ComfyUI/models"
     if os.path.exists(volume_models) and not os.path.islink(comfy_models):
         if os.path.exists(comfy_models):
-            os.rename(comfy_models, f"{comfy_models}_bak")
+            shutil.rmtree(comfy_models)
         os.symlink(volume_models, comfy_models)
 
     # Symlink custom nodes from volume
@@ -55,7 +56,7 @@ def start_comfyui():
     volume_nodes = f"{VOLUME_DIR}/ComfyUI/custom_nodes"
     if os.path.exists(volume_nodes) and not os.path.islink(comfy_nodes):
         if os.path.exists(comfy_nodes):
-            os.rename(comfy_nodes, f"{comfy_nodes}_bak")
+            shutil.rmtree(comfy_nodes)
         os.symlink(volume_nodes, comfy_nodes)
 
     # Install custom node dependencies (pip requirements + install scripts)

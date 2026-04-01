@@ -100,9 +100,21 @@ def queue_workflow(workflow):
         data=payload,
         headers={"Content-Type": "application/json"},
     )
-    resp = urllib.request.urlopen(req)
-    result = json.loads(resp.read())
+    try:
+        resp = urllib.request.urlopen(req)
+        result = json.loads(resp.read())
+    except urllib.error.HTTPError as e:
+        body = e.read().decode("utf-8", errors="replace")
+        raise RuntimeError(f"ComfyUI rejected prompt (HTTP {e.code}): {body[:2000]}")
+
+    # Check for node errors in the response
+    if "node_errors" in result and result["node_errors"]:
+        raise RuntimeError(f"ComfyUI node errors: {json.dumps(result['node_errors'])[:2000]}")
+    if "error" in result:
+        raise RuntimeError(f"ComfyUI prompt error: {json.dumps(result['error'])[:2000]}")
+
     actual_prompt_id = result.get("prompt_id", prompt_id)
+    print(f"[Worker] Prompt queued: {actual_prompt_id}")
 
     # Poll for completion
     timeout = int(os.environ.get("COMFY_TIMEOUT", "600"))
@@ -114,9 +126,17 @@ def queue_workflow(workflow):
             history = json.loads(history_resp.read())
 
             if actual_prompt_id in history:
+                # Check for execution errors
+                status_data = history[actual_prompt_id].get("status", {})
+                if status_data.get("status_str") == "error":
+                    msgs = status_data.get("messages", [])
+                    raise RuntimeError(f"ComfyUI execution error: {json.dumps(msgs)[:2000]}")
+
                 outputs = history[actual_prompt_id].get("outputs", {})
                 if outputs:
                     return outputs
+        except RuntimeError:
+            raise
         except Exception:
             pass
         time.sleep(2)

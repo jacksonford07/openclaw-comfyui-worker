@@ -38,46 +38,12 @@ def wait_for_comfyui(timeout=120):
 
 
 def start_comfyui():
-    """Start ComfyUI server in the background."""
+    """Start ComfyUI server in the background.
+
+    Symlinks and custom node deps are handled by start.sh before this runs.
+    """
     import subprocess
-    import glob
-    import shutil
 
-    # Symlink volume models into ComfyUI if not already done
-    comfy_models = f"{COMFY_DIR}/models"
-    volume_models = f"{VOLUME_DIR}/ComfyUI/models"
-    if os.path.exists(volume_models) and not os.path.islink(comfy_models):
-        if os.path.exists(comfy_models):
-            shutil.rmtree(comfy_models)
-        os.symlink(volume_models, comfy_models)
-
-    # Symlink custom nodes from volume
-    comfy_nodes = f"{COMFY_DIR}/custom_nodes"
-    volume_nodes = f"{VOLUME_DIR}/ComfyUI/custom_nodes"
-    if os.path.exists(volume_nodes) and not os.path.islink(comfy_nodes):
-        if os.path.exists(comfy_nodes):
-            shutil.rmtree(comfy_nodes)
-        os.symlink(volume_nodes, comfy_nodes)
-
-    # Install custom node dependencies (pip requirements + install scripts)
-    if os.path.isdir(comfy_nodes):
-        for req in glob.glob(f"{comfy_nodes}/*/requirements.txt"):
-            node_name = os.path.basename(os.path.dirname(req))
-            print(f"[Worker] Installing deps for {node_name}")
-            subprocess.run(
-                [sys.executable, "-m", "pip", "install", "-q", "-r", req],
-                timeout=120, capture_output=True
-            )
-        for install_script in glob.glob(f"{comfy_nodes}/*/install.py"):
-            node_name = os.path.basename(os.path.dirname(install_script))
-            print(f"[Worker] Running install.py for {node_name}")
-            subprocess.run(
-                [sys.executable, install_script],
-                cwd=os.path.dirname(install_script),
-                timeout=120, capture_output=True
-            )
-
-    # Start ComfyUI
     subprocess.Popen(
         [sys.executable, "main.py", "--listen", "127.0.0.1", "--port", "8188", "--disable-auto-launch"],
         cwd=COMFY_DIR,

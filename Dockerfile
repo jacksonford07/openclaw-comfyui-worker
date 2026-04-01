@@ -35,10 +35,12 @@ RUN mkdir -p /workspace/ComfyUI/output \
     /workspace/ComfyUI/input \
     /workspace/ComfyUI/models/loras
 
-# Copy handler
+# Copy handler + start script
 COPY handler.py /workspace/handler.py
+COPY start.sh /workspace/start.sh
+RUN chmod +x /workspace/start.sh
 
 # Copy install scripts (for reference / manual setup on volume)
 COPY scripts/ /workspace/scripts/
 
-CMD ["python", "-u", "/workspace/handler.py"]
+CMD ["/workspace/start.sh"]

@@ -40,6 +40,7 @@ def wait_for_comfyui(timeout=120):
 def start_comfyui():
     """Start ComfyUI server in the background."""
     import subprocess
+    import glob
 
     # Symlink volume models into ComfyUI if not already done
     comfy_models = f"{COMFY_DIR}/models"
@@ -56,6 +57,24 @@ def start_comfyui():
         if os.path.exists(comfy_nodes):
             os.rename(comfy_nodes, f"{comfy_nodes}_bak")
         os.symlink(volume_nodes, comfy_nodes)
+
+    # Install custom node dependencies (pip requirements + install scripts)
+    if os.path.isdir(comfy_nodes):
+        for req in glob.glob(f"{comfy_nodes}/*/requirements.txt"):
+            node_name = os.path.basename(os.path.dirname(req))
+            print(f"[Worker] Installing deps for {node_name}")
+            subprocess.run(
+                [sys.executable, "-m", "pip", "install", "-q", "-r", req],
+                timeout=120, capture_output=True
+            )
+        for install_script in glob.glob(f"{comfy_nodes}/*/install.py"):
+            node_name = os.path.basename(os.path.dirname(install_script))
+            print(f"[Worker] Running install.py for {node_name}")
+            subprocess.run(
+                [sys.executable, install_script],
+                cwd=os.path.dirname(install_script),
+                timeout=120, capture_output=True
+            )
 
     # Start ComfyUI
     subprocess.Popen(
@@ -173,6 +192,20 @@ def handler(job):
     # Utility action: download LoRA
     if job_input.get("action") == "download_lora":
         return handle_lora_download(job_input)
+
+    # Utility action: list volume contents for diagnostics
+    if job_input.get("action") == "list_volume":
+        target = job_input.get("path", VOLUME_DIR)
+        try:
+            entries = []
+            for item in os.listdir(target):
+                full = os.path.join(target, item)
+                kind = "dir" if os.path.isdir(full) else "file"
+                size = os.path.getsize(full) if os.path.isfile(full) else 0
+                entries.append({"name": item, "type": kind, "size": size})
+            return {"path": target, "entries": entries}
+        except Exception as e:
+            return {"error": str(e), "path": target}
 
     # Start ComfyUI on first real job
     if not _comfyui_started:

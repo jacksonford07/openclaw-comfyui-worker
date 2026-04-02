@@ -140,4 +140,4 @@ RUN chmod +x /workspace/start.sh
 
 COPY scripts/ /workspace/scripts/
 
-CMD ["/workspace/start.sh"]
+CMD ["python", "-u", "/workspace/handler.py"]

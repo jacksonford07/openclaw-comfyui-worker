@@ -11,8 +11,6 @@ ARG CIVITAI_TOKEN
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
-ENV HF_HOME=/workspace/hf_cache
-ENV HF_TOKEN=${HF_TOKEN}
 
 WORKDIR /workspace
 
@@ -84,44 +82,28 @@ RUN for d in */; do \
 WORKDIR /workspace/ComfyUI/models
 
 # Z-Image Turbo (main diffusion model ~12GB)
-RUN hf download Comfy-Org/z_image_turbo \
-      split_files/diffusion_models/z_image_turbo_bf16.safetensors \
-      --local-dir /tmp/hf_dl && \
-    mv /tmp/hf_dl/split_files/diffusion_models/z_image_turbo_bf16.safetensors diffusion_models/ && \
-    rm -rf /tmp/hf_dl
+RUN curl -L -o diffusion_models/z_image_turbo_bf16.safetensors \
+    "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/diffusion_models/z_image_turbo_bf16.safetensors"
 
 # Qwen 3 4B text encoder
-RUN hf download Comfy-Org/flux2-klein-4B \
-      split_files/text_encoders/qwen_3_4b.safetensors \
-      --local-dir /tmp/hf_dl && \
-    mv /tmp/hf_dl/split_files/text_encoders/qwen_3_4b.safetensors text_encoders/ && \
-    rm -rf /tmp/hf_dl
+RUN curl -L -o text_encoders/qwen_3_4b.safetensors \
+    "https://huggingface.co/Comfy-Org/flux2-klein-4B/resolve/main/split_files/text_encoders/qwen_3_4b.safetensors"
 
 # CLIP Vision
-RUN hf download h94/IP-Adapter \
-      models/image_encoder/model.safetensors \
-      --local-dir /tmp/hf_dl && \
-    mv /tmp/hf_dl/models/image_encoder/model.safetensors clip_vision/clip_vision_h.safetensors && \
-    rm -rf /tmp/hf_dl
+RUN curl -L -o clip_vision/clip_vision_h.safetensors \
+    "https://huggingface.co/h94/IP-Adapter/resolve/main/models/image_encoder/model.safetensors"
 
 # Z-Image VAE
-RUN hf download Comfy-Org/z_image_turbo \
-      split_files/vae/ae.safetensors \
-      --local-dir /tmp/hf_dl && \
-    mv /tmp/hf_dl/split_files/vae/ae.safetensors vae/ && \
-    rm -rf /tmp/hf_dl
+RUN curl -L -o vae/ae.safetensors \
+    "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/vae/ae.safetensors"
 
 # SD VAE
-RUN hf download stabilityai/sd-vae-ft-ema \
-      diffusion_pytorch_model.safetensors \
-      --local-dir /tmp/hf_dl && \
-    mv /tmp/hf_dl/diffusion_pytorch_model.safetensors vae/ema_vae_fp16.safetensors && \
-    rm -rf /tmp/hf_dl
+RUN curl -L -o vae/ema_vae_fp16.safetensors \
+    "https://huggingface.co/stabilityai/sd-vae-ft-ema/resolve/main/diffusion_pytorch_model.safetensors"
 
 # BFS Face Swap LoRA (default — always included)
-RUN hf download Alissonerdx/BFS-Best-Face-Swap \
-      bfs_head_v1_flux-klein_9b_step3500_rank128.safetensors \
-      --local-dir loras/
+RUN curl -L -o loras/bfs_head_v1_flux-klein_9b_step3500_rank128.safetensors \
+    "https://huggingface.co/Alissonerdx/BFS-Best-Face-Swap/resolve/main/bfs_head_v1_flux-klein_9b_step3500_rank128.safetensors"
 
 # SAM ViT-H for Impact Pack
 RUN curl -L -o sams/sam_vit_h_4b8939.pth \

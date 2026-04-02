@@ -6,7 +6,7 @@
 FROM runpod/pytorch:2.8.0-py3.11-cuda12.8.1-cudnn-devel-ubuntu22.04
 
 # Cache buster — change this to force a full rebuild
-ARG CACHE_BUST=v0.2.0
+ARG CACHE_BUST=v0.6.1
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1

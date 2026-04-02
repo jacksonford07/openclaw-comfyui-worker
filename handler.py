@@ -146,7 +146,7 @@ def handle_lora_download(job_input):
     if not lora_url or not dest_filename:
         return {"error": "lora_url and dest_filename are required"}
 
-    dest_dir = os.path.join(VOLUME_DIR, "ComfyUI", "models", "loras")
+    dest_dir = os.path.join(COMFY_DIR, "models", "loras")
     os.makedirs(dest_dir, exist_ok=True)
     dest_path = os.path.join(dest_dir, dest_filename)
 

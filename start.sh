@@ -20,6 +20,10 @@ if [ -d "$VOLUME/ComfyUI/custom_nodes" ] && [ ! -L "$COMFY/custom_nodes" ]; then
     ln -s "$VOLUME/ComfyUI/custom_nodes" "$COMFY/custom_nodes"
 fi
 
+# Install known problematic packages before custom node deps
+echo "[Start] Installing known dependencies..."
+pip install -q -U kernels 2>/dev/null || true
+
 # Install custom node dependencies
 if [ -d "$COMFY/custom_nodes" ]; then
     echo "[Start] Installing custom node dependencies..."

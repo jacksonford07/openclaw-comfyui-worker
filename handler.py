@@ -25,7 +25,7 @@ OUTPUT_DIR = f"{COMFY_DIR}/output"
 sys.path.insert(0, COMFY_DIR)
 
 
-def wait_for_comfyui(timeout=120):
+def wait_for_comfyui(timeout=300):
     """Wait for ComfyUI server to be ready."""
     start = time.time()
     while time.time() - start < timeout:

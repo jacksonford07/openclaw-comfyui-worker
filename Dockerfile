@@ -24,7 +24,7 @@ RUN git clone --depth 1 https://github.com/comfyanonymous/ComfyUI.git
 
 # Install ComfyUI requirements + core packages
 RUN pip install --no-cache-dir -r /workspace/ComfyUI/requirements.txt \
-    && pip install --no-cache-dir --force-reinstall "runpod==1.7.9" sageattention kernels \
+    && pip uninstall -y runpod && pip install --no-cache-dir "runpod==1.7.9" sageattention kernels \
     && pip install --no-cache-dir -U "huggingface_hub[cli]"
 
 # Create model directories

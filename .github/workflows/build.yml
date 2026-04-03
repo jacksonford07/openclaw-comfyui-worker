@@ -43,7 +43,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:v1.0.0,${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:v1.1.0,${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           build-args: |
             CIVITAI_TOKEN=${{ secrets.CIVITAI_TOKEN }}
           platforms: linux/amd64

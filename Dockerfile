@@ -99,17 +99,10 @@ RUN curl -L -o diffusion_models/z_image_turbo_bf16.safetensors \
     curl -L -o ultralytics/bbox/nipples_yolov8s.pt \
       "https://huggingface.co/ashllay/YOLO_Models/resolve/e07b01219ff1807e1885015f439d788b038f49bd/bbox/nipples_yolov8s.pt" && \
     curl -L -o SEEDVR2/seedvr2_ema_3b_fp16.safetensors \
-      "https://huggingface.co/numz/SeedVR2_comfyUI/resolve/main/seedvr2_ema_3b_fp16.safetensors" && \
-    curl -L -o checkpoints/CyberRealisticPony_V14.1_FP16.safetensors \
-      "https://huggingface.co/cyberdelia/CyberRealisticPony/resolve/main/CyberRealisticPony_V14.1_FP16.safetensors"
+      "https://huggingface.co/numz/SeedVR2_comfyUI/resolve/main/seedvr2_ema_3b_fp16.safetensors"
 
-# CivitAI models (separate layer — requires token)
-RUN if [ -n "${CIVITAI_TOKEN}" ]; then \
-      curl -L -H "Authorization: Bearer ${CIVITAI_TOKEN}" -o checkpoints/bigLust_v16.safetensors \
-        "https://civitai.com/api/download/models/1081768" && \
-      curl -L -H "Authorization: Bearer ${CIVITAI_TOKEN}" -o checkpoints/lustifySDXLNSFW_endgame.safetensors \
-        "https://civitai.com/api/download/models/1094291"; \
-    else echo "Skipping CivitAI models (no token)"; fi
+# Note: SDXL checkpoints (CyberRealisticPony, bigLust, lustifySDXL) removed —
+# zimg workflows use z_image_turbo, not SDXL. Add back if needed for other workflows.
 
 # ============================================================
 # HANDLER + START SCRIPT

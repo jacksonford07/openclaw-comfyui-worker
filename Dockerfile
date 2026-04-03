@@ -81,52 +81,34 @@ RUN for d in */; do \
 # ============================================================
 WORKDIR /workspace/ComfyUI/models
 
-# Z-Image Turbo (main diffusion model ~12GB)
+# All models in a single layer to minimize intermediate disk usage
 RUN curl -L -o diffusion_models/z_image_turbo_bf16.safetensors \
-    "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/diffusion_models/z_image_turbo_bf16.safetensors"
+      "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/diffusion_models/z_image_turbo_bf16.safetensors" && \
+    curl -L -o text_encoders/qwen_3_4b.safetensors \
+      "https://huggingface.co/Comfy-Org/flux2-klein-4B/resolve/main/split_files/text_encoders/qwen_3_4b.safetensors" && \
+    curl -L -o clip_vision/clip_vision_h.safetensors \
+      "https://huggingface.co/h94/IP-Adapter/resolve/main/models/image_encoder/model.safetensors" && \
+    curl -L -o vae/ae.safetensors \
+      "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/vae/ae.safetensors" && \
+    curl -L -o vae/ema_vae_fp16.safetensors \
+      "https://huggingface.co/stabilityai/sd-vae-ft-ema/resolve/main/diffusion_pytorch_model.safetensors" && \
+    curl -L -o loras/bfs_head_v1_flux-klein_9b_step3500_rank128.safetensors \
+      "https://huggingface.co/Alissonerdx/BFS-Best-Face-Swap/resolve/main/bfs_head_v1_flux-klein_9b_step3500_rank128.safetensors" && \
+    curl -L -o sams/sam_vit_h_4b8939.pth \
+      "https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth" && \
+    curl -L -o ultralytics/bbox/nipples_yolov8s.pt \
+      "https://huggingface.co/ashllay/YOLO_Models/resolve/e07b01219ff1807e1885015f439d788b038f49bd/bbox/nipples_yolov8s.pt" && \
+    curl -L -o SEEDVR2/seedvr2_ema_3b_fp16.safetensors \
+      "https://huggingface.co/numz/SeedVR2_comfyUI/resolve/main/seedvr2_ema_3b_fp16.safetensors" && \
+    curl -L -o checkpoints/CyberRealisticPony_V14.1_FP16.safetensors \
+      "https://huggingface.co/cyberdelia/CyberRealisticPony/resolve/main/CyberRealisticPony_V14.1_FP16.safetensors"
 
-# Qwen 3 4B text encoder
-RUN curl -L -o text_encoders/qwen_3_4b.safetensors \
-    "https://huggingface.co/Comfy-Org/flux2-klein-4B/resolve/main/split_files/text_encoders/qwen_3_4b.safetensors"
-
-# CLIP Vision
-RUN curl -L -o clip_vision/clip_vision_h.safetensors \
-    "https://huggingface.co/h94/IP-Adapter/resolve/main/models/image_encoder/model.safetensors"
-
-# Z-Image VAE
-RUN curl -L -o vae/ae.safetensors \
-    "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/vae/ae.safetensors"
-
-# SD VAE
-RUN curl -L -o vae/ema_vae_fp16.safetensors \
-    "https://huggingface.co/stabilityai/sd-vae-ft-ema/resolve/main/diffusion_pytorch_model.safetensors"
-
-# BFS Face Swap LoRA (default — always included)
-RUN curl -L -o loras/bfs_head_v1_flux-klein_9b_step3500_rank128.safetensors \
-    "https://huggingface.co/Alissonerdx/BFS-Best-Face-Swap/resolve/main/bfs_head_v1_flux-klein_9b_step3500_rank128.safetensors"
-
-# SAM ViT-H for Impact Pack
-RUN curl -L -o sams/sam_vit_h_4b8939.pth \
-    https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth
-
-# Nipples YOLO detection model
-RUN curl -L -o ultralytics/bbox/nipples_yolov8s.pt \
-    https://huggingface.co/ashllay/YOLO_Models/resolve/e07b01219ff1807e1885015f439d788b038f49bd/bbox/nipples_yolov8s.pt
-
-# SeedVR2 upscaler
-RUN curl -L -o SEEDVR2/seedvr2_ema_3b_fp16.safetensors \
-    https://huggingface.co/numz/SeedVR2_comfyUI/resolve/main/seedvr2_ema_3b_fp16.safetensors
-
-# CyberRealisticPony checkpoint
-RUN curl -L -o checkpoints/CyberRealisticPony_V14.1_FP16.safetensors \
-    https://huggingface.co/cyberdelia/CyberRealisticPony/resolve/main/CyberRealisticPony_V14.1_FP16.safetensors
-
-# CivitAI models (optional — requires token)
+# CivitAI models (separate layer — requires token)
 RUN if [ -n "${CIVITAI_TOKEN}" ]; then \
       curl -L -H "Authorization: Bearer ${CIVITAI_TOKEN}" -o checkpoints/bigLust_v16.safetensors \
-        https://civitai.com/api/download/models/1081768 && \
+        "https://civitai.com/api/download/models/1081768" && \
       curl -L -H "Authorization: Bearer ${CIVITAI_TOKEN}" -o checkpoints/lustifySDXLNSFW_endgame.safetensors \
-        https://civitai.com/api/download/models/1094291; \
+        "https://civitai.com/api/download/models/1094291"; \
     else echo "Skipping CivitAI models (no token)"; fi
 
 # ============================================================

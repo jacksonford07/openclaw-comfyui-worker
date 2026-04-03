@@ -43,3 +43,5 @@ jobs:
           build-args: |
             CIVITAI_TOKEN=${{ secrets.CIVITAI_TOKEN }}
           platforms: linux/amd64
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

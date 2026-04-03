@@ -170,7 +170,10 @@ def handler(job):
     """
     global _comfyui_started
 
-    job_input = job["input"]
+    if not isinstance(job, dict) or "input" not in job:
+        return {"error": "Invalid job format", "received": str(job)[:200]}
+
+    job_input = job.get("input") or {}
 
     # Health check — empty input returns status
     if not job_input or (not job_input.get("workflow") and not job_input.get("action")):

@@ -24,7 +24,7 @@ RUN git clone --depth 1 https://github.com/comfyanonymous/ComfyUI.git
 
 # Install ComfyUI requirements + core packages
 RUN pip install --no-cache-dir -r /workspace/ComfyUI/requirements.txt \
-    && pip install --no-cache-dir "runpod>=1.7.0,<2.0.0" sageattention kernels \
+    && pip install --no-cache-dir "runpod~=1.7.9" sageattention kernels \
     && pip install --no-cache-dir -U "huggingface_hub[cli]"
 
 # Create model directories
@@ -109,10 +109,15 @@ RUN curl -L -o diffusion_models/z_image_turbo_bf16.safetensors \
 # ============================================================
 WORKDIR /workspace
 
+# Remove base image's start.sh and test_input.json that interfere with serverless
+RUN rm -f /start.sh /test_input.json
+
 COPY handler.py /workspace/handler.py
 COPY start.sh /workspace/start.sh
 RUN chmod +x /workspace/start.sh
 
 COPY scripts/ /workspace/scripts/
 
+# Override both ENTRYPOINT and CMD to bypass nvidia_entrypoint.sh
+ENTRYPOINT []
 CMD ["python", "-u", "/workspace/handler.py"]

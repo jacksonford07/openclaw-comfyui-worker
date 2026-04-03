@@ -19,7 +19,8 @@ RUN git clone --depth 1 https://github.com/comfyanonymous/ComfyUI.git
 RUN pip install --no-cache-dir -r /workspace/ComfyUI/requirements.txt
 
 # Install RunPod SDK + extras
-RUN pip install --no-cache-dir runpod sageattention
+# Force runpod 1.7.9 — base image has 1.8.2 which is broken for serverless
+RUN pip uninstall -y runpod && pip install --no-cache-dir "runpod==1.7.9" sageattention
 
 # Create required directories
 RUN mkdir -p /workspace/ComfyUI/output \

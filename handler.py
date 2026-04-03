@@ -270,4 +270,4 @@ def handler(job):
     return result
 
 
-runpod.serverless.start({"handler": handler})
+runpod.serverless.start({"handler": handler, "refresh_worker": True})
